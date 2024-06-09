@@ -1,0 +1,18 @@
+1) Configure aws cli
+2) Initiate AWS s3 bucket s3://company-data-multi-agent-debate
+3)
+3) Create company data and place in 
+
+CREATE TABLE IF NOT EXISTS companies (
+    company_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    company_country varchar(255) NOT NULL,
+    revenue int,
+    company_age int
+)
+LOCATION 's3://company-data-multi-agent-debate'
+
+https://992382368264.signin.aws.amazon.com/console
+992382368264
+
+Can I give a loan of 500,000 to incom company
+Who was i asking about?
