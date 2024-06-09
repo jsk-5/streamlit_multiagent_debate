@@ -1,10 +1,8 @@
 import streamlit as st
 import boto3
 
-from langchain.chains import RetrievalQA
 from langchain_aws import BedrockLLM
 from langchain_community.retrievers import AmazonKnowledgeBasesRetriever
-import time
 from langchain.chains import create_history_aware_retriever
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.prompts import ChatPromptTemplate
@@ -15,21 +13,15 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.messages import AIMessage, HumanMessage
-from langchain_core.runnables import Runnable
-from langchain.tools.retriever import create_retriever_tool
-from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.sqlite import SqliteSaver
-import logging
 
 
 
 retriever = AmazonKnowledgeBasesRetriever(
     knowledge_base_id="O9O2CCKXV4",
-    retrieval_config={"vectorSearchConfiguration": {"numberOfResults": 4}},
+    retrieval_config={"vectorSearchConfiguration": {"numberOfResults": 10}},
 )
 
-model_kwargs_claude = {"temperature": 0, "top_k": 10, "max_tokens_to_sample": 3000}
+model_kwargs_claude = {"temperature": 0.4, "top_k": 10, "max_tokens_to_sample": 3000}
 
 llm = BedrockLLM(model_id="anthropic.claude-v2", model_kwargs=model_kwargs_claude)
 
@@ -125,9 +117,22 @@ if prompt := st.chat_input("Ask me a question about my data"):
             "configurable": {"session_id": "abc123"}
         },  # constructs a key "abc123" in `store`.
     )["answer"]
+
+    response1 = conversational_rag_chain.invoke(
+        {"input": "Do you agree with the previous information?"},
+        config={
+            "configurable": {"session_id": "abc123"}
+        },  # constructs a key "abc123" in `store`.
+    )["answer"]
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         
         st.markdown(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
+
+    with st.chat_message("Fact_checker"):
+        
+        st.markdown(response1)
+
+    st.session_state.messages.append({"role": "Fact_checker", "content": response})
 
